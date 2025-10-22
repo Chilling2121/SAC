@@ -1,8 +1,5 @@
-#Practica dos Clases y Objetos      Fecha:01/10/25
-#Espinoza Ponce Carlos Enrique
-#Delgado Santana Jonathan Estifen
-
-#Estructura de una clase
+#Estrucutra del Proyecto de Sistema de Asignacion de Cupos
+#SAC
 
 #Clase Grupo-Prioritario   
 class GrupoPrioritario:
