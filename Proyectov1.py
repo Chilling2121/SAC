@@ -1,6 +1,6 @@
 #Estrucutra del Proyecto de Sistema de Asignacion de Cupos
 #SAC
-
+#HOLA
 #Clase Grupo-Prioritario   
 class GrupoPrioritario:
     def __init__(self, id_grupo, nombres_grupo, descripcion, porcentaje_cupos):
