@@ -163,47 +163,47 @@ class Puntaje:
 
 
 # Ejemplo de uso
-if __name__ == "__main__":
-
+if __name__ == "__main__": #sirve para ejecutar el codigo solo si se ejecuta este archivo directamente
+    # Creacion de grupos prioritarios
     grupo1 = GrupoPrioritario(1, "Discapacitados", "Aspirantes con discapacidades", 5)
     grupo2 = GrupoPrioritario(2, "Indígenas", "Aspirantes de comunidades indígenas", 3)
-
+    # Creacion de carreras
     carrera1 = Carrera(1, "Ingeniería en Sistemas", "Facultad de Ciencias de la Vida y Tecnología", 50)
     carrera2 = Carrera(2, "Medicina", "Facultad de Ciencias de la Salud", 30)
-
+    # Creacion de aspirantes
     aspirante1 = Aspirante(1, "Cédula", "1101234567", "Ana", "Pérez", "F", "Femenino", "Ecuatoriana",
                         "2005-03-10", "Mestiza/o", "ana@email.com", "0999999999",
                         9.5, merito_academico=True)
-
+    
     aspirante2 = Aspirante(2, "Cédula", "1109876543", "Luis", "García", "M", "Masculino", "Ecuatoriana",
                         "2005-07-22", "Afroecuatoriana/o", "luis@email.com", "0988888888",
                         8.7, vulnerabilidad=True)
-
+    # Creacion de puntajes
     puntaje1 = Puntaje(aspirante1, 850, 9.5)
     puntaje2 = Puntaje(aspirante2, 780, 8.0)
     puntaje1.calcular_ponderado()
     puntaje2.calcular_ponderado()
-
+    # Asignacion de grupos prioritarios
     aspirante1.asignar_grupo()
     aspirante2.asignar_grupo()
-
+    # Mostrar informacion
     print("\n--- ASPIRANTES ---")
     print(aspirante1.informacion())
     print(aspirante2.informacion())
-
+    # Mostrar puntajes
     print("\n--- PUNTAJES ---")
     print(puntaje1.resumen())
     print(puntaje2.resumen())
-
+    # Mostrar informacion de carreras
     print("\n--- CUPOS POR CARRERA ---")
     print(carrera1.distribuir_cupos_por_grupo([grupo1, grupo2]))
     print(carrera2.distribuir_cupos_por_grupo([grupo1, grupo2]))
-
+    # Asignacion de cupos
     cupo1 = Cupo(1, carrera1)
     cupo2 = Cupo(2, carrera2)
     cupo1.asignar(aspirante1)
     cupo2.asignar(aspirante2)
-
+    # Mostrar informacion de cupos asignados
     print("\n--- CUPOS ASIGNADOS ---")
     print(cupo1.info())
     print(cupo2.info())
