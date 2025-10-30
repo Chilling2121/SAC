@@ -7,135 +7,73 @@ class GrupoPrioritario:
         self.id_grupo = id_grupo
         self.nombres_grupo = nombres_grupo
         self.descripcion = descripcion
-        self.porcentaje_cupos = porcentaje_cupos #Atributo importante
-#Metodos de la clase GrupoPrioritario
-#Metodo 1
-    #Calcula los cupos aginados al grupo
+        self.porcentaje_cupos = porcentaje_cupos
+
     def calcular_cupos_reservados(self, total_cupos):
         return int((self.porcentaje_cupos / 100) * total_cupos)
 
-#HAY QUE CAMBIAR DE LUGAR NO PERTENECE A ESTA CLASE 
-    def mostrar_info(self):
-        print(f"Grupo: {self.nombres_grupo}")
-        print(f"Porcentaje reservado: {self.porcentaje_cupos}%")
-
-
+    def __str__(self):
+        return f"{self.nombres_grupo} ({self.porcentaje_cupos}%)"
 
 
 #Clase Cupo
 class Cupo:
-    def __init__(self, id_cupo, carrera, aspirante=None):
+    def __init__(self, id_cupo, carrera):
         self.id_cupo = id_cupo
         self.carrera = carrera
-        self.aspirante = aspirante
+        self.aspirante = None
         self.estado = "Disponible"
-#Metodos de la clase Cupo
-    def asignar_aspirante(self, aspirante):
-        # Verifica que el cupo esté libre
-        if self.estado != "Disponible":
-            print("Este cupo ya está asignado a otro aspirante.")
-            return False
 
-        # Pide a la carrera ocupar un cupo (usa el método de la clase Carrera)
+    def asignar(self, aspirante):
+        if self.estado != "Disponible":
+            return False
         if self.carrera.asignar_cupo():
             self.aspirante = aspirante
             self.estado = "Asignado"
             return True
-        
-    def mostrar_info(self):
-            if self.aspirante:
-                print(f"Cupo {self.id_cupo} - {self.carrera.nombres}: Asignado a {self.aspirante.nombres}")
-            else:
-                print(f"Cupo {self.id_cupo} - {self.carrera.nombres}: Disponible")
+        return False
+
+    def liberar(self):
+        if self.estado == "Asignado":
+            self.aspirante = None
+            self.estado = "Disponible"
+            self.carrera.cupos_ocupados -= 1
+
+    def info(self):
+        asignado = self.aspirante.nombres if self.aspirante else "Nadie"
+        return f"Cupo {self.id_cupo} - {self.carrera.nombres}: {asignado}"
 
 
-
-
-#Clase Aspirante - Representa a la persona que solicita un cupo
+#Clase Aspirante
 class Aspirante:
-    # El metodo __init__ es llamdo a crear un objeto (Constructor)
-    #Atributos de la instancia
-    def __init__(
-        self,
-        idAspirante: int,
-        tipo_documento: str,            #cédula, pasaporte
-        identificacion: str,            #Número de cédula o pasaporte del aspirante 
-        nombres: str,                   #Los nombres del Aspirante
-        apellidos: str,                 #Apellidos del Aspirante
-        sexo: str,                      #Registra el sexo del usuario - MUJER, HOMBRE
-        genero: str,                    #Tipo de identidad de género autodefinida - Prefiero no contestar, Masculino, Femenino, otro.
-        nacionalidad: str,              #Nacionalidad del ciudadano
-        fecha_nacimiento: str,          #Fecha de nacimiento del usuario 
-        autoidentificacion: str,        #Afroecuatoriana/o Afrodescendiente; Blanca/o; Indígena; Mestiza/o; Montubia/o; Mulata/o; Negra/o; Otro/a
-        correo: str,                    #Correo electrónico del ciudadano
-        celular: str,                   #Número de celular del ciudadano
-        titulo_homologado: bool,        #Identifica si el ciudadano cuenta con título de bachiller homologado - SI, NO (True - False)
-        tipo_unidad_educativa: str,     #Particular, Fiscal, Fiscomisional, Municipal
-        calificacion: float,            #Nota de grado del ciudadano
-        cuadro_honor: bool,             #Ciudadanos de tercer año de bachillerato que pertenecen al cuadro de honor - SI, NO (True - False)
-        vulnerabilidad_socioeconomica: bool,    #Identifica se el ciudadano pasa por una vulnerabilidad socioeconómica - SI, NO (True - False)
-        merito_academico: bool,                 #Identifica a los ciudadanos abanderados y escoltas de las instituciones educativas del último periodo académico en curso. - SI, NO (True - False)
-        bachiller_pueblos_nacionalidad: bool,   #Identifica a los ciudadanos que estén cursando el último período del tercer año de bachillerato y que pertenecen a pueblos y nacionalidades. - SI, NO (True - False)
-        bachiller_periodo_academico: bool,      #Identifica a los ciudadanos que estén cursando el último período del tercer año de bachillerato. - SI, NO (True - False)
-        poblacion_general: bool                 #Identifica a los ciudadanos que no constan en los campos VULNERABILIDAD_SOCIOECONOMICA, MERITO_ACADEMICO, BACHILLER_PUEBLOS_NACIONALIDAD, BACHILLER_PER_ACADEMICO - SI, NO (True - False)
-        ):  
-        
-        #Atributos o Datos personales
-        self.idAspirante= idAspirante
-        self.tipo_documento = tipo_documento
-        self.identificacion = identificacion
+    def __init__(self, idAspirante, nombres, apellidos, identificacion, calificacion, merito_academico=False, vulnerabilidad=False):
+        self.idAspirante = idAspirante
         self.nombres = nombres
         self.apellidos = apellidos
-        self.sexo = sexo
-        self.genero = genero
-        self.nacionalidad = nacionalidad
-        self.fecha_nacimiento = fecha_nacimiento
-        self.autoidentificacion = autoidentificacion
-        
-        #Atributos o Datos de Contacto
-        self.correo = correo
-        self.celular = celular
-        
-        #Atributos o datos académicos
-        self.titulo_homologado = titulo_homologado
-        self.tipo_unidad_educativa = tipo_unidad_educativa
+        self.__identificacion = identificacion   # privado
         self.calificacion = calificacion
-        self.cuadro_honor = cuadro_honor
-        
-        #Atributos de Condiciones especiales
-        self.vulnerabilidad_socioeconomica = vulnerabilidad_socioeconomica
         self.merito_academico = merito_academico
-        self.bachiller_pueblos_nacionalidad = bachiller_pueblos_nacionalidad
-        self.bachiller_periodo_academico = bachiller_periodo_academico
-        self.poblacion_general = poblacion_general
-        
-        #Estado inicial del aspirante 
+        self.vulnerabilidad = vulnerabilidad
+        self.grupo_prioritario = None
         self.estado = "Registrado"
-        
-        
-    #Métodos de la clase Aspirante
-    
-    #Metodo que muestra la información del estudiante    
-    def informacion_Aspirante(self):    
-        print(f"Nombre: {self.nombres} {self.apellidos}")
-        print(f"ID: {self.identificacion}")
-        print(f"Sexo: {self.sexo}")
-        print(f"Nacionalidad: {self.nacionalidad}")
-    
-    
-    #Método que decide a qué grupo prioritario pertenece el aspirante   
+
+    # Encapsulamiento
+    @property
+    def identificacion(self):
+        return self.__identificacion
+
     def asignar_grupo(self):
         if self.merito_academico:
-            self.grupo_prioritario = "Grupo de Mérito Académico"
-        elif self.vulnerabilidad_socioeconomica:
-            self.grupo_prioritario = "Grupo de Mayor Vulnerabilidad Socioeconómica"
-        elif self.bachiller_pueblos_nacionalidad or self.bachiller_periodo_academico:
-            self.grupo_prioritario = "Bachilleres del Último Periodo Académico"
+            self.grupo_prioritario = "Mérito Académico"
+        elif self.vulnerabilidad:
+            self.grupo_prioritario = "Vulnerabilidad Socioeconómica"
         else:
             self.grupo_prioritario = "Población General"
+        return self.grupo_prioritario
 
-        print(f"El aspirante {self.nombres} {self.apellidos} pertenece al grupo:{self.grupo_prioritario}")
-        
+    def informacion(self):
+        return f"{self.nombres} {self.apellidos} ({self.identificacion}) - Grupo: {self.grupo_prioritario or 'Sin asignar'}"
+
 
 #No implementados por el momento
     #Método para Postular a una carrera
@@ -157,52 +95,54 @@ class Carrera:
         self.facultad = facultad
         self.total_cupos = total_cupos
         self.cupos_ocupados = 0
+        self.cupos_por_grupo = {}
 
     def asignar_cupo(self):
-        # Registra un cupo como ocupado si aún hay disponibilidad
         if self.cupos_ocupados < self.total_cupos:
             self.cupos_ocupados += 1
             return True
         else:
-            print(f"Límite de cupos alcanzado en {self.nombres}.")
+            print(f"[X] No hay cupos disponibles en {self.nombres}.")
             return False
 
     def cupos_disponibles(self):
         return self.total_cupos - self.cupos_ocupados
 
+    def distribuir_cupos_por_grupo(self, grupos):
+        for grupo in grupos:
+            self.cupos_por_grupo[grupo.nombres_grupo] = grupo.calcular_cupos_reservados(self.total_cupos)
+        return self.cupos_por_grupo
+
     def mostrar_info(self):
-        print(f"Carrera: {self.nombres} - Facultad: {self.facultad}")
-        print(f"Cupos totales: {self.total_cupos} | Disponibles: {self.cupos_disponibles()}")
+        return f"{self.nombres} ({self.facultad}) - Cupos totales: {self.total_cupos} | Disponibles: {self.cupos_disponibles()}"
+
 
 
 #Clase Puntaje
 class Puntaje:
-    #Atributo de clase
-    minimo_requerido = 800  # Puntaje mínimo para acceder a cupo
+    minimo_requerido = 800
 
-    def __init__(self, id_puntaje, aspirante, nota_examen, nota_bachillerato):
-        self.id_puntaje = id_puntaje
+    def __init__(self, aspirante, nota_examen, nota_bachillerato):
+        if not (0 <= nota_examen <= 1000):
+            raise ValueError("La nota de examen debe estar entre 0 y 1000.")
+        if not (0 <= nota_bachillerato <= 10):
+            raise ValueError("La nota de bachillerato debe estar entre 0 y 10.")
         self.aspirante = aspirante
-        self.nota_examen = nota_examen          # sobre 1000
-        self.nota_bachillerato = nota_bachillerato  # sobre 10
-        self.puntaje_final = 0                  # ponderado total
-#Metodos de la clase Puntaje
+        self.nota_examen = nota_examen
+        self.nota_bachillerato = nota_bachillerato
+        self.puntaje_final = 0
 
     def calcular_ponderado(self):
         self.puntaje_final = (self.nota_examen * 0.5) + ((self.nota_bachillerato * 100) * 0.5)
         return self.puntaje_final
 
     def cumple_requisito(self, minimo=None):
-        #Verifica si el aspirante alcanza el puntaje mínimo para acceder a cupo.
-        #Por ejemplo: mínimo 800/1000.
-        objetivo = minimo if minimo is not None else Puntaje.minimo_requerido
-        return self.puntaje_final >= objetivo
-    def mostrar_puntaje(self):
-        #Muestra los valores detallados del puntaje del aspirante.
-        print(f"Aspirante: {self.aspirante.nombres} {self.aspirante.apellidos}")
-        print(f"Examen de admisión: {self.nota_examen}/1000")
-        print(f"Bachillerato: {self.nota_bachillerato}/10")
-        print(f"Puntaje final ponderado: {self.puntaje_final}")
+        umbral = minimo or Puntaje.minimo_requerido
+        return self.puntaje_final >= umbral
+
+    def resumen(self):
+        return f"{self.aspirante.nombres} - Puntaje final: {self.puntaje_final} ({'Cumple' if self.cumple_requisito() else 'No cumple'})"
+
 
 
 #Ejemplo de uso de las clases
