@@ -1,7 +1,6 @@
 #Estrucutra del Proyecto de Sistema de Asignacion de Cupos
 #SAC
-#PRUEBA
-#PRUEBA
+
 #Clase Grupo-Prioritario   
 class GrupoPrioritario:
     def __init__(self, id_grupo, nombres_grupo, descripcion, porcentaje_cupos):
@@ -58,38 +57,102 @@ class Cupo:
                 print(f"Cupo {self.id_cupo} - {self.carrera.nombres}: Disponible")
 
 
+#Clase Aspirante - Representa a la persona que solicita un cupo
 
-#Clase Aspirante
 class Aspirante:
     # El metodo __init__ es llamdo a crear un objeto (Constructor)
-    def __init__(self, id_aspirante,nombres,apellidos,cedula,grupo_prioritario=None):
-        #Atributos de instancia 
-        self.id_aspirante=id_aspirante 
-        self.nombres= nombres #self se refiere asi misma con su variable
-        self.apellidos= apellidos
-        self.cedula= cedula
-        # Asigna el grupo prioritario recibido; si no se proporciona, crea uno por defecto "Población General"
-        self.grupo_prioritario = grupo_prioritario or GrupoPrioritario(
-            0, "Población General", "Aspirantes sin prioridad específica", 90
-        )
+    #Atributos de la instancia
+    def __init__(
+        self,
+        idAspirante: int,
+        tipo_documento: str,            #cédula, pasaporte
+        identificacion: str,            #Número de cédula o pasaporte del aspirante 
+        nombres: str,                   #Los nombres del Aspirante
+        apellidos: str,                 #Apellidos del Aspirante
+        sexo: str,                      #Registra el sexo del usuario - MUJER, HOMBRE
+        genero: str,                    #Tipo de identidad de género autodefinida - Prefiero no contestar, Masculino, Femenino, otro.
+        nacionalidad: str,              #Nacionalidad del ciudadano
+        fecha_nacimiento: str,          #Fecha de nacimiento del usuario 
+        autoidentificacion: str,        #Afroecuatoriana/o Afrodescendiente; Blanca/o; Indígena; Mestiza/o; Montubia/o; Mulata/o; Negra/o; Otro/a
+        correo: str,                    #Correo electrónico del ciudadano
+        celular: str,                   #Número de celular del ciudadano
+        titulo_homologado: bool,        #Identifica si el ciudadano cuenta con título de bachiller homologado - SI, NO (True - False)
+        tipo_unidad_educativa: str,     #Particular, Fiscal, Fiscomisional, Municipal
+        calificacion: float,            #Nota de grado del ciudadano
+        cuadro_honor: bool,             #Ciudadanos de tercer año de bachillerato que pertenecen al cuadro de honor - SI, NO (True - False)
+        vulnerabilidad_socioeconomica: bool,    #Identifica se el ciudadano pasa por una vulnerabilidad socioeconómica - SI, NO (True - False)
+        merito_academico: bool,                 #Identifica a los ciudadanos abanderados y escoltas de las instituciones educativas del último periodo académico en curso. - SI, NO (True - False)
+        bachiller_pueblos_nacionalidad: bool,   #Identifica a los ciudadanos que estén cursando el último período del tercer año de bachillerato y que pertenecen a pueblos y nacionalidades. - SI, NO (True - False)
+        bachiller_periodo_academico: bool,      #Identifica a los ciudadanos que estén cursando el último período del tercer año de bachillerato. - SI, NO (True - False)
+        poblacion_general: bool                 #Identifica a los ciudadanos que no constan en los campos VULNERABILIDAD_SOCIOECONOMICA, MERITO_ACADEMICO, BACHILLER_PUEBLOS_NACIONALIDAD, BACHILLER_PER_ACADEMICO - SI, NO (True - False)
+        ):  
+        
+        #Atributos o Datos personales
+        self.idAspirante= idAspirante
+        self.tipo_documento = tipo_documento
+        self.identificacion = identificacion
+        self.nombres = nombres
+        self.apellidos = apellidos
+        self.sexo = sexo
+        self.genero = genero
+        self.nacionalidad = nacionalidad
+        self.fecha_nacimiento = fecha_nacimiento
+        self.autoidentificacion = autoidentificacion
+        
+        #Atributos o Datos de Contacto
+        self.correo = correo
+        self.celular = celular
+        
+        #Atributos o datos académicos
+        self.titulo_homologado = titulo_homologado
+        self.tipo_unidad_educativa = tipo_unidad_educativa
+        self.calificacion = calificacion
+        self.cuadro_honor = cuadro_honor
+        
+        #Atributos de Condiciones especiales
+        self.vulnerabilidad_socioeconomica = vulnerabilidad_socioeconomica
+        self.merito_academico = merito_academico
+        self.bachiller_pueblos_nacionalidad = bachiller_pueblos_nacionalidad
+        self.bachiller_periodo_academico = bachiller_periodo_academico
+        self.poblacion_general = poblacion_general
+        
         #Estado inicial del aspirante 
         self.estado = "Registrado"
-#Metodos de la clase Aspirante
-    def asignar_grupoo(self,grupo=None):
-        if grupo:
-            self.grupo_prioritario = grupo
+        
+        
+    #Métodos de la clase Aspirante
+    
+    #Metodo que muestra la información del estudiante    
+    def informacion_Aspirante(self):    
+        print(f"Nombre: {self.nombres} {self.apellidos}")
+        print(f"ID: {self.identificacion}")
+        print(f"Sexo: {self.sexo}")
+        print(f"Nacionalidad: {self.nacionalidad}")
+    
+    
+    #Método que decide a qué grupo prioritario pertenece el aspirante   
+    def asignar_grupo(self):
+        if self.merito_academico:
+            self.grupo_prioritario = "Grupo de Mérito Académico"
+        elif self.vulnerabilidad_socioeconomica:
+            self.grupo_prioritario = "Grupo de Mayor Vulnerabilidad Socioeconómica"
+        elif self.bachiller_pueblos_nacionalidad or self.bachiller_periodo_academico:
+            self.grupo_prioritario = "Bachilleres del Último Periodo Académico"
         else:
-            self.grupo_prioritario = GrupoPrioritario(
-                0, "Población General", "Aspirantes sin prioridad específica", 90
-            )
-    def cambiar_estado(self, nuevo_estado):
-        #Cambia el estado del aspirante (Registrado, Asignado, Admitido)
-        self.estado = nuevo_estado
-    def mostrar_informacion(self):
-            grupo = self.grupo_prioritario.nombres_grupo if self.grupo_prioritario else "Ninguno"
-            print(f"Aspirante: {self.nombres} {self.apellidos}")
-            print(f"Grupo Prioritario: {grupo}")
-            print(f"Estado: {self.estado}")
+            self.grupo_prioritario = "Población General"
+
+        print(f"El aspirante {self.nombres} {self.apellidos} pertenece al grupo:{self.grupo_prioritario}")
+        
+     
+    #Método para Postular a una carrera
+    def Postular(self):
+        print("El aspirante se postula a una carrera")
+        
+    def aceptar_cupo(self):
+        pass
+    
+    def rechazar_cupo(self):
+        pass
 
 
 #Clase Carrera
@@ -158,48 +221,109 @@ if __name__ == "__main__": #Para pruebas dentro del mismo archivo en la terminal
     carrera1 = Carrera(1, "Ingeniería en Sistemas", "Facultad de Ciencias de la vida y tecnología", 50) #Total de cupos (50)
     carrera2 = Carrera(2, "Medicina", "Facultad de Ciencias de la Salud", 30)
 
-    # Crear aspirantes
-    aspirante1 = Aspirante(1, "Carlos Enrique", "Espinoza Ponce", "1234567890", grupo1)
-    aspirante2 = Aspirante(2, "Jonathan Estifen", "Delgado Santana", "0987654321", grupo2)
+# Crear los aspirantes
+# Crear el primer aspirante
+aspirante1 = Aspirante(
+idAspirante=1,
+tipo_documento="Cédula",
+identificacion="1101234567",
+nombres="Ana",
+apellidos="Pérez",
+sexo="F",
+genero="Femenino",
+nacionalidad="Ecuatoriana",
+fecha_nacimiento="2005-03-10",
+autoidentificacion="Mestiza/o",
+correo="ana@email.com",
+celular="0999999999",
+titulo_homologado=True,
+tipo_unidad_educativa="Fiscal",
+calificacion=9.5,
+cuadro_honor=True,
+vulnerabilidad_socioeconomica=False,
+merito_academico=True,
+bachiller_pueblos_nacionalidad=False,
+bachiller_periodo_academico=True,
+poblacion_general=False
+)
 
-    # Crear puntajes
-    puntaje1 = Puntaje(1, aspirante1, 850, 9.5)
-    puntaje2 = Puntaje(2, aspirante2, 780, 8.0)
+# Crear el segundo aspirante
+aspirante2 = Aspirante(
+idAspirante=2,
+tipo_documento="Cédula",
+identificacion="1109876543",
+nombres="Luis",
+apellidos="García",
+sexo="M",
+genero="Masculino",
+nacionalidad="Ecuatoriana",
+fecha_nacimiento="2005-07-22",
+autoidentificacion="Afroecuatoriana/o",
+correo="luis@email.com",
+celular="0988888888",
+titulo_homologado=True,
+tipo_unidad_educativa="Particular",
+calificacion=8.7,
+cuadro_honor=False,
+vulnerabilidad_socioeconomica=True,
+merito_academico=False,
+bachiller_pueblos_nacionalidad=False,
+bachiller_periodo_academico=True,
+poblacion_general=False
+)
 
-    # Calcular puntajes ponderados
-    puntaje1.calcular_ponderado()
-    puntaje2.calcular_ponderado()
+print("___________________________________________________________________________")
+# Crear puntajes
+puntaje1 = Puntaje(1, aspirante1, 850, 9.5)
+puntaje2 = Puntaje(2, aspirante2, 780, 8.0)
+
+print("___________________________________________________________________________")
+# Calcular puntajes ponderados
+puntaje1.calcular_ponderado()
+puntaje2.calcular_ponderado()
 
 
-    # Mostrar información
-    aspirante1.mostrar_informacion()
-    puntaje1.mostrar_puntaje()
-    carrera1.mostrar_info()
+print("___________________________________________________________________________")
+# Mostrar información
+aspirante1.informacion_Aspirante()
+puntaje1.mostrar_puntaje()
+carrera1.mostrar_info()
 
-    aspirante2.mostrar_informacion()
-    puntaje2.mostrar_puntaje()
-    carrera2.mostrar_info()
+print("___________________________________________________________________________")
+aspirante2.informacion_Aspirante()
+puntaje2.mostrar_puntaje()
+carrera2.mostrar_info()
 
-    # Verificar si los aspirantes cumplen el requisito mínimo actual
-    print("Mínimo requerido (Atributo de clase):", Puntaje.minimo_requerido)
-    print(f"{aspirante1.nombres} cumple requisito: {puntaje1.cumple_requisito()}")  # 800 por defecto
-    print(f"{aspirante2.nombres} cumple requisito: {puntaje2.cumple_requisito()}")
+print("___________________________________________________________________________")
+# Asignar grupo prioritario según la normativa
+aspirante1.asignar_grupo()
+aspirante2.asignar_grupo()
 
-    # Cambiar el puntaje mínimo global (afecta a todos los objetos de la clase)
-    Puntaje.minimo_requerido = 750
-    print("Nuevo mínimo requerido (Atributo de clase):", Puntaje.minimo_requerido)
+print("___________________________________________________________________________")
+# Verificar si los aspirantes cumplen el requisito mínimo actual
+print("Mínimo requerido (Atributo de clase):", Puntaje.minimo_requerido)
+print(f"{aspirante1.nombres} cumple requisito: {puntaje1.cumple_requisito()}")  # 800 por defecto
+print(f"{aspirante2.nombres} cumple requisito: {puntaje2.cumple_requisito()}")
 
-    # Re-evaluar SIN recrear los objetos: el método usa el nuevo valor de la clase.
-    print(f"{aspirante1.nombres} cumple con el nuevo mínimo: {puntaje1.cumple_requisito()}")
-    print(f"{aspirante2.nombres} cumple con el nuevo mínimo: {puntaje2.cumple_requisito()}")
+print("___________________________________________________________________________")
+# Cambiar el puntaje mínimo global (afecta a todos los objetos de la clase)
+Puntaje.minimo_requerido = 750
+print("Nuevo mínimo requerido (Atributo de clase):", Puntaje.minimo_requerido)
 
 
-    # Crear cupos y asignar aspirantes
-    cupo1 = Cupo(1, carrera1)
-    cupo2 = Cupo(2, carrera2)
+print("___________________________________________________________________________")
+# Re-evaluar SIN recrear los objetos: el método usa el nuevo valor de la clase.
+print(f"{aspirante1.nombres} cumple con el nuevo mínimo: {puntaje1.cumple_requisito()}")
+print(f"{aspirante2.nombres} cumple con el nuevo mínimo: {puntaje2.cumple_requisito()}")
 
-    cupo1.asignar_aspirante(aspirante1)
-    cupo2.asignar_aspirante(aspirante2)
 
-    cupo1.mostrar_info()
-    cupo2.mostrar_info()
+print("___________________________________________________________________________")
+# Crear cupos y asignar aspirantes
+cupo1 = Cupo(1, carrera1)
+cupo2 = Cupo(2, carrera2)
+
+cupo1.asignar_aspirante(aspirante1)
+cupo2.asignar_aspirante(aspirante2)
+
+cupo1.mostrar_info()
+cupo2.mostrar_info()
