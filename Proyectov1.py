@@ -1,4 +1,4 @@
-#Estrucutra del Proyecto de Sistema de Asignacion de Cupos
+#Proyecto de Sistema de Asignacion de Cupos
 #SAC
 
 #Clase Grupo-Prioritario   
@@ -7,18 +7,18 @@ class GrupoPrioritario:
         self.id_grupo = id_grupo
         self.nombres_grupo = nombres_grupo
         self.descripcion = descripcion
-        self.porcentaje_cupos = porcentaje_cupos
+        self.porcentaje_cupos = porcentaje_cupos #Atributo importante
 #Metodos de la clase GrupoPrioritario
+#Metodo 1
+    #Calcula los cupos aginados al grupo
     def calcular_cupos_reservados(self, total_cupos):
-        #Calcula los cupos aginados al grupo
         return int((self.porcentaje_cupos / 100) * total_cupos)
-    def calcular_cupos_restantes(self, total_cupos, usados):
-    #Devuelve los cupos que aún quedan disponibles dentro del porcentaje.
-        cupos_reservados = int((self.porcentaje_cupos / 100) * total_cupos)
-        return max(0, cupos_reservados - usados)
+
+#HAY QUE CAMBIAR DE LUGAR NO PERTENECE A ESTA CLASE 
     def mostrar_info(self):
         print(f"Grupo: {self.nombres_grupo}")
         print(f"Porcentaje reservado: {self.porcentaje_cupos}%")
+
 
 
 
@@ -41,15 +41,7 @@ class Cupo:
             self.aspirante = aspirante
             self.estado = "Asignado"
             return True
-        else:
-            # La carrera no tenía disponibilidad
-            return False
-            #Verifica si la carrera aún tiene cupos disponibles.
-            disponibles = self.carrera.cupos_disponibles()
-            if disponibles > 0:
-                print(f"Hay {disponibles} cupos disponibles en {self.carrera.nombres}.")
-            else:
-                print(f"Límite de cupos alcanzado en {self.carrera.nombres}.")
+        
     def mostrar_info(self):
             if self.aspirante:
                 print(f"Cupo {self.id_cupo} - {self.carrera.nombres}: Asignado a {self.aspirante.nombres}")
@@ -57,8 +49,9 @@ class Cupo:
                 print(f"Cupo {self.id_cupo} - {self.carrera.nombres}: Disponible")
 
 
-#Clase Aspirante - Representa a la persona que solicita un cupo
 
+
+#Clase Aspirante - Representa a la persona que solicita un cupo
 class Aspirante:
     # El metodo __init__ es llamdo a crear un objeto (Constructor)
     #Atributos de la instancia
@@ -143,16 +136,17 @@ class Aspirante:
 
         print(f"El aspirante {self.nombres} {self.apellidos} pertenece al grupo:{self.grupo_prioritario}")
         
-     
+
+#No implementados por el momento
     #Método para Postular a una carrera
-    def Postular(self):
-        print("El aspirante se postula a una carrera")
+    #def Postular(self):
+        #print("El aspirante se postula a una carrera")
         
-    def aceptar_cupo(self):
-        pass
+    #def aceptar_cupo(self):
+        #pass
     
-    def rechazar_cupo(self):
-        pass
+    #def rechazar_cupo(self):
+        #pass
 
 
 #Clase Carrera
@@ -193,12 +187,11 @@ class Puntaje:
         self.nota_bachillerato = nota_bachillerato  # sobre 10
         self.puntaje_final = 0                  # ponderado total
 #Metodos de la clase Puntaje
+
     def calcular_ponderado(self):
-        examen_ponderado = (self.nota_examen * 0.5)
-        bachillerato_ponderado = ((self.nota_bachillerato * 100) * 0.5)
-        # nota_bachillerato * 100 convierte de escala 10 → 1000
-        self.puntaje_final = examen_ponderado + bachillerato_ponderado
+        self.puntaje_final = (self.nota_examen * 0.5) + ((self.nota_bachillerato * 100) * 0.5)
         return self.puntaje_final
+
     def cumple_requisito(self, minimo=None):
         #Verifica si el aspirante alcanza el puntaje mínimo para acceder a cupo.
         #Por ejemplo: mínimo 800/1000.
@@ -210,6 +203,7 @@ class Puntaje:
         print(f"Examen de admisión: {self.nota_examen}/1000")
         print(f"Bachillerato: {self.nota_bachillerato}/10")
         print(f"Puntaje final ponderado: {self.puntaje_final}")
+
 
 #Ejemplo de uso de las clases
 if __name__ == "__main__": #Para pruebas dentro del mismo archivo en la terminal
