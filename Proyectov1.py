@@ -208,3 +208,7 @@ if __name__ == "__main__": #sirve para ejecutar el codigo solo si se ejecuta est
     print("\n--- CUPOS ASIGNADOS ---")
     print(cupo1.info())
     print(cupo2.info())
+    
+    print("\n--- INFORMACIÓN DE CARRERAS ---")
+    print(carrera1.mostrar_info())
+    print(carrera2.mostrar_info())
