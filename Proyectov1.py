@@ -2,14 +2,15 @@
 #Proyecto de Sistema de Asignacion de Cupos
 #SAC
 
-# Clase Base - Persona
+# SOLID (SRP): 
+# Clase que representa a una persona con sus datos básicos de identificación y contacto.
+# Su única función es almacenar y proporcionar información personal.
+
 class Persona:
-    #Recibe los datos basicos de una persona
     def __init__(self, tipo_documento, identificacion, nombres, apellidos, sexo, genero,
-                nacionalidad, fecha_nacimiento, autoidentificacion, correo, celular):
-        # Datos de identidad y contacto
+                 nacionalidad, fecha_nacimiento, autoidentificacion, correo, celular):
         self.tipo_documento = tipo_documento
-        self.__identificacion = identificacion # Atributo privado o encapsulado
+        self.__identificacion = identificacion
         self.nombres = nombres
         self.apellidos = apellidos
         self.sexo = sexo
@@ -20,195 +21,225 @@ class Persona:
         self.correo = correo
         self.celular = celular
 
-    @property #propiedad de solo lectura
-    def identificacion(self): #no recibe parametros
-        return self.__identificacion #retorna el valor del atributo privado
+    @property
+    def identificacion(self):
+        return self.__identificacion
 
-    def informacion_basica(self): #no recibe parametros
-        #retorna una cadena con el nombre completo y la identificacion
+    def informacion_basica(self):
         return f"{self.nombres} {self.apellidos} ({self.identificacion})"
 
 
-# Clase Aspirante que hereda de la clase  Persona
 class Aspirante(Persona):
-    #Recibe los datos especificos de un aspirante
     def __init__(self, idAspirante, tipo_documento, identificacion, nombres, apellidos, sexo, genero,
-                nacionalidad, fecha_nacimiento, autoidentificacion, correo, celular,
-                calificacion, merito_academico=False, vulnerabilidad=False):
-        # Llama al constructor de la clase base Persona
-        super().__init__(tipo_documento, identificacion, nombres, apellidos, sexo, genero,
-                        nacionalidad, fecha_nacimiento, autoidentificacion, correo, celular)
-        # Datos especificos del aspirante
+                 nacionalidad, fecha_nacimiento, autoidentificacion, correo, celular, calificacion,
+                vulnerabilidad_socioeconomica, merito_academico, bachiller_pueblos_nacionalidad, bachiller_periodo_academico):
+        
+        #NUEVOS ATRIBUTOS PARA LA CLASE PERSONA
+        super().__init__(tipo_documento, identificacion, nombres,apellidos, sexo,genero, nacionalidad, 
+                         fecha_nacimiento, autoidentificacion, correo,celular)
+        
         self.idAspirante = idAspirante
-        self.calificacion = calificacion # nota de bachillerato
+        self.calificacion = calificacion
+        self.vulnerabilidad_socioeconomica = vulnerabilidad_socioeconomica
         self.merito_academico = merito_academico
-        self.vulnerabilidad = vulnerabilidad
-        self.grupo_prioritario = None # Inicialmente sin grupo asignado
-        self.estado = "Registrado" # Estado inicial del aspirante
+        self.bachiller_pueblos_nacionalidad = bachiller_pueblos_nacionalidad
+        self.bachiller_periodo_academico = bachiller_periodo_academico
+        self.grupo_prioritario = None
+        self.estado = "Registrado"
 
-    def asignar_grupo(self): #no recibe parametros
-        # Asigna el grupo prioritario basado en las condiciones
-        if self.merito_academico:
-            self.grupo_prioritario = "Mérito Académico"
-        elif self.vulnerabilidad:
-            self.grupo_prioritario = "Vulnerabilidad Socioeconómica"
-        else:
-            self.grupo_prioritario = "Población General"
+
+    # SOLID (SRP)
+    # Asigna al aspirante un grupo prioritario según sus condiciones.
+    # El aspirante no decide las reglas, solo recibe el grupo que le corresponde.
+
+    def asignar_grupo(self, selector_grupo):
+        self.grupo_prioritario = selector_grupo.seleccionar(self)
         return self.grupo_prioritario
-    # Retorna la informacion completa del aspirante
-    def informacion(self):
-        return f"{self.informacion_basica()} - Grupo: {self.grupo_prioritario or 'Sin asignar'}"
 
 
-# Clase GrupoPrioritario
+# SOLID (SRP)
+# Representa un grupo prioritario del sistema.
+# Define el porcentaje de cupos que le corresponde dentro de una carrera.
+
 class GrupoPrioritario:
-    def __init__(self, id_grupo, nombres_grupo, descripcion, porcentaje_cupos):
+    def __init__(self, id_grupo, nombre, descripcion, porcentaje_cupos):
         self.id_grupo = id_grupo
-        self.nombres_grupo = nombres_grupo
+        self.nombre = nombre
         self.descripcion = descripcion
         self.porcentaje_cupos = porcentaje_cupos
+
+    # Calcula los cupos reservados del grupo en base al total de cupos de la carrera.
 
     def calcular_cupos_reservados(self, total_cupos):
         return int((self.porcentaje_cupos / 100) * total_cupos)
 
-    def __str__(self):
-        return f"{self.nombres_grupo} ({self.porcentaje_cupos}%)"
 
-# Clase Carrera
-class Carrera:
-    #Recibe los datos de una carrera
-    def __init__(self, id_carrera, nombres, facultad, total_cupos):
-        # Datos de la carrera
-        self.id_carrera = id_carrera
-        self.nombres = nombres
-        self.facultad = facultad
-        self.total_cupos = total_cupos
-        self.cupos_ocupados = 0
-        self.cupos_por_grupo = {}
-    # Asigna un cupo si hay disponibilidad
-    def asignar_cupo(self):
-        # Verifica si hay cupos disponibles
-        if self.cupos_ocupados < self.total_cupos:
-            # si hay cupos disponibles, asigna uno incrementando el contador
-            self.cupos_ocupados += 1
-            # Retorna True indicando que se asigno un cupo
-            return True
-        # Si no hay cupos disponibles, retorna False e imprime un mensaje
-        print(f"[X] No hay cupos disponibles en {self.nombres}.")
-        return False
-    # Retorna la cantidad de cupos disponibles
-    def cupos_disponibles(self):
-        # Calcula y retorna los cupos disponibles de la carrera
-        return self.total_cupos - self.cupos_ocupados
-    # Distribuye los cupos por grupo prioritario
-    def distribuir_cupos_por_grupo(self, grupos):
-        # Calcula y almacena los cupos reservados por cada grupo prioritario
-        self.cupos_por_grupo = {g.nombres_grupo: g.calcular_cupos_reservados(self.total_cupos) for g in grupos}
-        # Retorna el diccionario con los cupos por grupo
-        return self.cupos_por_grupo
-    # Muestra la informacion de la carrera
-    def mostrar_info(self):
-        return f"{self.nombres} ({self.facultad}) - Cupos totales: {self.total_cupos} | Disponibles: {self.cupos_disponibles()}"
+# SOLID (SRP)
+# Clase encargada de decidir a qué grupo prioritario pertenece un aspirante.
+# Centraliza las reglas de clasificación para no mezclarlas con otras clases.
 
-# Clase Cupo
-class Cupo:
-    #Recibe los datos de un cupo
-    def __init__(self, id_cupo, carrera):
-        self.id_cupo = id_cupo
-        self.carrera = carrera
-        self.aspirante = None # Inicialmente sin aspirante asignado
-        self.estado = "Disponible" # Estado inicial del cupo
+class SelectorGrupo:
+    def __init__(self, grupo_merito, grupo_vulnerabilidad, grupo_general):
+        self.grupo_merito = grupo_merito
+        self.grupo_vulnerabilidad = grupo_vulnerabilidad
+        self.grupo_general = grupo_general
 
-    def asignar(self, aspirante):
-        # Asigna un aspirante al cupo si está disponible
-        if self.estado != "Disponible": # Si el cupo no está disponible
-            return False # Retorna False indicando que no se pudo asignar
-        if self.carrera.asignar_cupo(): # Si se pudo asignar un cupo en la carrera
-            self.aspirante = aspirante # Asigna el aspirante al cupo
-            self.estado = "Asignado" # Cambia el estado del cupo a "Asignado"
-            return True # Retorna True indicando que se asignó correctamente
-        return False
+    # Aplica las reglas y retorna el grupo prioritario correspondiente al aspirante.
 
-    def info(self): #no recibe parametros
-        asignado = self.aspirante.nombres if self.aspirante else "Nadie" #si no hay aspirante asignado
-        return f"Cupo {self.id_cupo} - {self.carrera.nombres}: {asignado}" #retorna la informacion del cupo
+    def seleccionar(self, aspirante):
+        if aspirante.merito_academico:
+            return self.grupo_merito
+        if aspirante.vulnerabilidad:
+            return self.grupo_vulnerabilidad
+        return self.grupo_general
 
-# Clase Puntaje
+
+# SOLID (SRP): Puntaje solo calcula y valida puntaje, no asigna cupos.
 class Puntaje:
-    minimo_requerido = 800 # Atributo de clase para el puntaje minimo requerido
-    #Recibe los datos para calcular el puntaje final
-    def __init__(self, aspirante, nota_examen, nota_bachillerato):
-        if not (0 <= nota_examen <= 1000): # calida la nota de examen
-            raise ValueError("La nota de examen debe estar entre 0 y 1000.") #lanza un error si no es valida
-        if not (0 <= nota_bachillerato <= 10): #valida la nota de bachillerato
-            raise ValueError("La nota de bachillerato debe estar entre 0 y 10.") #lanza un error si no es valida
-        # Datos del aspirante y sus notas
-        self.aspirante = aspirante 
+    def __init__(self, aspirante, nota_examen, nota_bachillerato, regla_puntaje, minimo_requerido):
+        self.aspirante = aspirante
         self.nota_examen = nota_examen
         self.nota_bachillerato = nota_bachillerato
+        self.regla_puntaje = regla_puntaje
+        self.minimo_requerido = minimo_requerido
         self.puntaje_final = 0
 
-    # Calcula el puntaje ponderado
-    def calcular_ponderado(self):
-        self.puntaje_final = (self.nota_examen * 0.5) + ((self.nota_bachillerato * 100) * 0.5)
+    def calcular(self):
+        self.puntaje_final = self.regla_puntaje.calcular(self.nota_examen, self.nota_bachillerato)
         self.puntaje_final = round(self.puntaje_final, 2)
         return self.puntaje_final
 
-    # Verifica si cumple el requisito minimo
-    def cumple_requisito(self, minimo=None):
-        umbral = minimo or Puntaje.minimo_requerido
-        return self.puntaje_final >= umbral
-    # Retorna un resumen del puntaje
-    def resumen(self):
-        return f"{self.aspirante.nombres} - Puntaje final: {self.puntaje_final} ({'Cumple' if self.cumple_requisito() else 'No cumple'})"
+    def cumple_minimo(self):
+        return self.puntaje_final >= self.minimo_requerido
 
 
-# Ejemplo de uso
-if __name__ == "__main__": #sirve para ejecutar el codigo solo si se ejecuta este archivo directamente
-    # Creacion de grupos prioritarios
-    grupo1 = GrupoPrioritario(1, "Discapacitados", "Aspirantes con discapacidades", 5)
-    grupo2 = GrupoPrioritario(2, "Indígenas", "Aspirantes de comunidades indígenas", 3)
-    # Creacion de carreras
-    carrera1 = Carrera(1, "Ingeniería en Sistemas", "Facultad de Ciencias de la Vida y Tecnología", 50)
-    carrera2 = Carrera(2, "Medicina", "Facultad de Ciencias de la Salud", 30)
-    # Creacion de aspirantes
-    aspirante1 = Aspirante(1, "Cédula", "1101234567", "Ana", "Pérez", "F", "Femenino", "Ecuatoriana",
-                        "2005-03-10", "Mestiza/o", "ana@email.com", "0999999999",
-                        9.5, merito_academico=True)
-    
-    aspirante2 = Aspirante(2, "Cédula", "1109876543", "Luis", "García", "M", "Masculino", "Ecuatoriana",
-                        "2005-07-22", "Afroecuatoriana/o", "luis@email.com", "0988888888",
-                        8.7, vulnerabilidad=True)
-    # Creacion de puntajes
-    puntaje1 = Puntaje(aspirante1, 850, 9.5)
-    puntaje2 = Puntaje(aspirante2, 780, 8.0)
-    puntaje1.calcular_ponderado()
-    puntaje2.calcular_ponderado()
-    # Asignacion de grupos prioritarios
-    aspirante1.asignar_grupo()
-    aspirante2.asignar_grupo()
-    # Mostrar informacion
-    print("\n--- ASPIRANTES ---")
-    print(aspirante1.informacion())
-    print(aspirante2.informacion())
-    # Mostrar puntajes
-    print("\n--- PUNTAJES ---")
-    print(puntaje1.resumen())
-    print(puntaje2.resumen())
-    # Mostrar informacion de carreras
-    print("\n--- CUPOS POR CARRERA ---")
-    print(carrera1.distribuir_cupos_por_grupo([grupo1, grupo2]))
-    print(carrera2.distribuir_cupos_por_grupo([grupo1, grupo2]))
-    # Asignacion de cupos
-    cupo1 = Cupo(1, carrera1)
-    cupo2 = Cupo(2, carrera2)
-    cupo1.asignar(aspirante1)
-    cupo2.asignar(aspirante2)
-    # Mostrar informacion de cupos asignados
-    print("\n--- CUPOS ASIGNADOS ---")
-    print(cupo1.info())
-    print(cupo2.info())
-    
-    print("\n--- INFORMACIÓN DE CARRERAS ---")
-    print(carrera1.mostrar_info())
-    print(carrera2.mostrar_info())
+# SOLID (OCP): ReglaPuntaje permite cambiar la fórmula sin modificar Puntaje.
+# Concepto: Open/Closed = abierto a extensión (nuevas reglas), cerrado a modificación (no tocar Puntaje).
+class ReglaPuntaje:
+    def __init__(self, peso_examen, peso_bachillerato, factor_bachillerato=100):
+        self.peso_examen = peso_examen
+        self.peso_bachillerato = peso_bachillerato
+        self.factor_bachillerato = factor_bachillerato
+
+    def calcular(self, nota_examen, nota_bachillerato):
+        return (nota_examen * self.peso_examen) + ((nota_bachillerato * self.factor_bachillerato) * self.peso_bachillerato)
+
+
+# SOLID (SRP): Carrera solo administra cupos, reservas y ocupación.
+class Carrera:
+    def __init__(self, id_carrera, nombre, facultad, total_cupos):
+        self.id_carrera = id_carrera
+        self.nombre = nombre
+        self.facultad = facultad
+        self.total_cupos = total_cupos
+        self.cupos_ocupados = 0
+        self.cupos_reservados = {}
+        self.cupos_ocupados_grupo = {}
+
+    def configurar_reservas(self, grupos):
+        for g in grupos:
+            self.cupos_reservados[g.id_grupo] = g.calcular_cupos_reservados(self.total_cupos)
+            self.cupos_ocupados_grupo[g.id_grupo] = 0
+
+    def cupos_disponibles_totales(self):
+        return self.total_cupos - self.cupos_ocupados
+
+    def cupos_disponibles_grupo(self, grupo):
+        return self.cupos_reservados.get(grupo.id_grupo, 0) - self.cupos_ocupados_grupo.get(grupo.id_grupo, 0)
+
+    def asignar_por_grupo(self, grupo):
+        if self.cupos_disponibles_totales() > 0 and self.cupos_disponibles_grupo(grupo) > 0:
+            self.cupos_ocupados += 1
+            self.cupos_ocupados_grupo[grupo.id_grupo] += 1
+            return True
+        return False
+
+    def asignar_general(self):
+        if self.cupos_disponibles_totales() > 0:
+            self.cupos_ocupados += 1
+            return True
+        return False
+
+
+# SOLID (ISP): Política de asignación con método simple (contrato pequeño).
+# Concepto: Interface Segregation = “interfaces” pequeñas; aquí solo pedimos decidir asignación.
+class PoliticaAsignacion:
+    def __init__(self, permitir_general=True):
+        self.permitir_general = permitir_general
+
+    def intentar_asignar(self, carrera, aspirante):
+        grupo = aspirante.grupo_prioritario
+
+        if grupo and carrera.asignar_por_grupo(grupo):
+            return True, "Cupo por grupo prioritario"
+
+        if self.permitir_general and carrera.asignar_general():
+            return True, "Cupo general"
+
+        return False, "Sin cupo aplicable"
+
+
+# SOLID (DIP): SAC depende de abstracciones/objetos inyectados (politica), no de detalles.
+# Concepto: Dependency Inversion = el módulo alto nivel (SAC) NO crea la política; se la pasan (inyección).
+class SAC:
+    def __init__(self, politica_asignacion):
+        self.politica_asignacion = politica_asignacion
+
+    def asignar_cupo(self, carrera, puntaje):
+        aspirante = puntaje.aspirante
+
+        if not puntaje.cumple_minimo():
+            return aspirante.idAspirante, carrera.nombre, "NO ASIGNADO", "No cumple puntaje mínimo"
+
+        if carrera.cupos_disponibles_totales() <= 0:
+            return aspirante.idAspirante, carrera.nombre, "NO ASIGNADO", "No hay cupos disponibles"
+
+        ok, motivo = self.politica_asignacion.intentar_asignar(carrera, aspirante)
+        if ok:
+            aspirante.estado = "Asignado"
+            return aspirante.idAspirante, carrera.nombre, "ASIGNADO", motivo
+
+        return aspirante.idAspirante, carrera.nombre, "NO ASIGNADO", motivo
+
+
+# SOLID (SRP): “Vista”/salida separada del SAC y de las entidades.
+# Concepto: separar lógica de negocio de presentación.
+class SalidaSAC:
+    def mostrar(self, resultado):
+        print(resultado)
+
+
+if __name__ == "__main__":
+    grupo_general = GrupoPrioritario(0, "General", "Población general", 0)
+    grupo_merito = GrupoPrioritario(1, "Mérito", "Mérito académico", 5)
+    grupo_vulnerabilidad = GrupoPrioritario(2, "Vulnerabilidad", "Vulnerabilidad socioeconómica", 3)
+
+    selector = SelectorGrupo(grupo_merito, grupo_vulnerabilidad, grupo_general)
+
+    carrera = Carrera(1, "Ingeniería en Sistemas", "Tecnología", 50)
+    carrera.configurar_reservas([grupo_merito, grupo_vulnerabilidad])
+
+    aspirante = Aspirante(
+        1, "Cédula", "1101234567", "Ana", "Pérez", "F", "Femenino",
+        "Ecuatoriana", "2005-03-10", "Mestiza/o", "ana@email.com", "0999999999",
+        9.5, merito_academico=True
+    )
+    aspirante.asignar_grupo(selector)
+
+    regla_puntaje = ReglaPuntaje(peso_examen=0.5, peso_bachillerato=0.5, factor_bachillerato=100)
+    puntaje = Puntaje(
+        aspirante,
+        nota_examen=850,
+        nota_bachillerato=9.5,
+        regla_puntaje=regla_puntaje,
+        minimo_requerido=800
+    )
+    puntaje.calcular()
+
+    politica = PoliticaAsignacion(permitir_general=True)
+    sac = SAC(politica_asignacion=politica)
+
+    resultado = sac.asignar_cupo(carrera, puntaje)
+
+    salida = SalidaSAC()
+    salida.mostrar(resultado)
