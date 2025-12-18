@@ -344,3 +344,14 @@ class ReglaVulnerabilidad(ReglaGrupo):
 
     def nombre(self):
         return "VULNERABILIDAD SOCIOECONÓMICA"
+
+
+
+#Grupo prioritario - Bachiller pueblos y nacionalidades
+
+class ReglaPueblos(ReglaGrupo):
+    def pertenece(self, aspirante):
+        return aspirante.bachiller_pueblos_nacionalidad == "SI"
+
+    def nombre(self):
+        return "BACHILLER PUEBLOS Y NACIONALIDADES"
