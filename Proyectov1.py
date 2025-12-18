@@ -222,7 +222,8 @@ if __name__ == "__main__":
     aspirante = Aspirante(
         1, "Cédula", "1101234567", "Ana", "Pérez", "F", "Femenino",
         "Ecuatoriana", "2005-03-10", "Mestiza/o", "ana@email.com", "0999999999",
-        9.5, merito_academico=True
+        9.5, vulnerabilidad_socioeconomica=False, merito_academico=True, bachiller_pueblos_nacionalidad=False, 
+        bachiller_periodo_academico=True
     )
     aspirante.asignar_grupo(selector)
 
