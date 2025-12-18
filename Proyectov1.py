@@ -355,3 +355,22 @@ class ReglaPueblos(ReglaGrupo):
 
     def nombre(self):
         return "BACHILLER PUEBLOS Y NACIONALIDADES"
+    
+
+#Se refiere al grupo prioritario de Mérito Académico
+
+class ReglaMerito(ReglaGrupo):
+    def pertenece(self, aspirante):
+        return aspirante.merito_academico == "SI"
+
+    def nombre(self):
+        return "MÉRITO ACADÉMICO"
+
+# Grupo prioritario - Vulnerabilidad Socioeconómica
+
+class ReglaVulnerabilidad(ReglaGrupo):
+    def pertenece(self, aspirante):
+        return aspirante.vulnerabilidad_socioeconomica == "SI"
+
+    def nombre(self):
+        return "VULNERABILIDAD SOCIOECONÓMICA"
