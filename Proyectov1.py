@@ -246,7 +246,7 @@ if __name__ == "__main__":
 
 
 
-# ESTO ES LO NUEVO -------------------------------------------------------------------------
+# ESTO ES LO NUEVO -------------------------------------------------------------------------_______________________________________________________________________
 
 class Persona:
     def __init__(self, tipo_documento, identificacion, nombres, apellidos, sexo, genero,
@@ -431,7 +431,85 @@ sistema = SistemaAsignacion([
 
 
 
+#EJEMPLO DE CASO DE USO PARA ESTA PARTE - HASTA LO QUE TENGO
 
+# Crear la carrera de administracion de empresas
+
+carrera_admin = Carrera(
+    nombre="Administración de Empresas",
+    modalidad="Presencial",
+    jornada="Nocturna",
+    cupos=35
+)
+
+#crear aspirantes
+aspirante1 = Aspirante(
+    idAspirante=1,
+    tipo_documento="CÉDULA",
+    identificacion="1350432058",
+    nombres="Jhon",
+    apellidos="Zambrano",
+    sexo="HOMBRE",
+    genero="MASCULINO",
+    nacionalidad="ECUATORIANA",
+    fecha_nacimiento="2005-03-12",
+    autoidentificacion="Montubio",
+    correo="jhon@example.com",
+    celular="0999999999",
+    calificacion=795,
+    vulnerabilidad_socioeconomica="NO",
+    merito_academico="SI",
+    bachiller_pueblos_nacionalidad="NO",
+    bachiller_periodo_academico="NO"
+)
+
+aspirante2 = Aspirante(
+    idAspirante=2,
+    tipo_documento="CÉDULA",
+    identificacion="1351658859",
+    nombres="Liliana",
+    apellidos="Loor",
+    sexo="MUJER",
+    genero="FEMENINO",
+    nacionalidad="ECUATORIANA",
+    fecha_nacimiento="2006-07-18",
+    autoidentificacion="Mestiza",
+    correo="liliana@example.com",
+    celular="0988888888",
+    calificacion=749,
+    vulnerabilidad_socioeconomica="SI",
+    merito_academico="NO",
+    bachiller_pueblos_nacionalidad="NO",
+    bachiller_periodo_academico="NO"
+)
+
+aspirante3 = Aspirante(
+    idAspirante=3,
+    tipo_documento="CÉDULA",
+    identificacion="1315374700",
+    nombres="Luis",
+    apellidos="Vera",
+    sexo="HOMBRE",
+    genero="MASCULINO",
+    nacionalidad="ECUATORIANA",
+    fecha_nacimiento="2005-11-09",
+    autoidentificacion="Montubio",
+    correo="luis@example.com",
+    celular="0977777777",
+    calificacion=742,
+    vulnerabilidad_socioeconomica="NO",
+    merito_academico="NO",
+    bachiller_pueblos_nacionalidad="NO",
+    bachiller_periodo_academico="NO"
+)
+
+print("Aspitante 1-----")
+print(sistema.asignar(carrera_admin, aspirante1))
+print("Aspitante 2-----")
+print(sistema.asignar(carrera_admin, aspirante2))
+print("Aspitante 3-----")
+print(sistema.asignar(carrera_admin, aspirante3))
+print("Cupos restantes para la carrera de Administración de empresas:", carrera_admin.cupos)
 
 
 
