@@ -396,3 +396,25 @@ class ReglaBachillerUltimo(ReglaGrupo):
     def nombre(self):
         return "BACHILLER ÚLTIMO AÑO"
     
+
+
+# Sistema de Asignación
+
+class SistemaAsignacion:
+    def __init__(self, reglas_en_orden):
+        self.reglas = reglas_en_orden
+
+    def asignar(self, carrera, aspirante):
+        # 1. Validar cupos
+        if not carrera.tiene_cupos():
+            return "SIN CUPO"
+
+        # 2. Determinar grupo según orden
+        for regla in self.reglas:
+            if regla.pertenece(aspirante):
+                carrera.asignar_cupo()
+                return f"ASIGNADO EN {regla.nombre()}"
+
+        # 3. Población general
+        carrera.asignar_cupo()
+        return "ASIGNADO EN POBLACIÓN GENERAL"
