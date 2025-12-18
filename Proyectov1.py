@@ -308,5 +308,21 @@ class Carrera:
             return True
         return False
 
+#--------------------------------------------------------------------------------
+
+# Clase ReglaGrupo, toma una decisión
+#Esta clase responde UNA pregunta: ¿Este aspirante pertenece a este grupo?
+
+
+from abc import ABC, abstractmethod
+
+class ReglaGrupo(ABC):
+    @abstractmethod
+    def pertenece(self, aspirante):
+        pass
+
+    @abstractmethod
+    def nombre(self):
+        pass
 
 
