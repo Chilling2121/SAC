@@ -418,3 +418,30 @@ class SistemaAsignacion:
         # 3. Población general
         carrera.asignar_cupo()
         return "ASIGNADO EN POBLACIÓN GENERAL"
+
+
+#Sirve para definir el ORDEN y las REGLAS con las que se asignan los cupos.
+
+
+sistema = SistemaAsignacion([
+    ReglaMerito(),
+    ReglaVulnerabilidad(),
+    ReglaPueblos(),
+    ReglaBachillerUltimo()
+])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
