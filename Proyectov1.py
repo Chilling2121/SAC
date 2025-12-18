@@ -243,3 +243,53 @@ if __name__ == "__main__":
 
     salida = SalidaSAC()
     salida.mostrar(resultado)
+
+
+
+# ESTO ES LO NUEVO -------------------------------------------------------------------------
+
+class Persona:
+    def __init__(self, tipo_documento, identificacion, nombres, apellidos, sexo, genero,
+                 nacionalidad, fecha_nacimiento, autoidentificacion, correo, celular):
+        self.tipo_documento = tipo_documento
+        self.__identificacion = identificacion
+        self.nombres = nombres
+        self.apellidos = apellidos
+        self.sexo = sexo
+        self.genero = genero
+        self.nacionalidad = nacionalidad
+        self.fecha_nacimiento = fecha_nacimiento
+        self.autoidentificacion = autoidentificacion
+        self.correo = correo
+        self.celular = celular
+
+    @property
+    def identificacion(self):
+        return self.__identificacion
+
+    def informacion_basica(self):
+        return f"{self.nombres} {self.apellidos} ({self.identificacion})"
+    
+
+class Aspirante(Persona):
+    def __init__(self, idAspirante, tipo_documento, identificacion, nombres, apellidos, sexo, genero,
+                 nacionalidad, fecha_nacimiento, autoidentificacion, correo, celular, calificacion,
+                vulnerabilidad_socioeconomica, merito_academico, bachiller_pueblos_nacionalidad, bachiller_periodo_academico):
+        
+        #NUEVOS ATRIBUTOS PARA LA CLASE PERSONA
+        super().__init__(tipo_documento, identificacion, nombres,apellidos, sexo,genero, nacionalidad, 
+                         fecha_nacimiento, autoidentificacion, correo,celular)
+        
+        self.idAspirante = idAspirante
+        self.calificacion = calificacion
+        self.vulnerabilidad_socioeconomica = vulnerabilidad_socioeconomica
+        self.merito_academico = merito_academico
+        self.bachiller_pueblos_nacionalidad = bachiller_pueblos_nacionalidad
+        self.bachiller_periodo_academico = bachiller_periodo_academico
+        self.grupo_prioritario = None
+        self.estado = "Registrado"
+
+
+
+
+
