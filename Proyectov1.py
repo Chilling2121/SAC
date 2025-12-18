@@ -290,6 +290,23 @@ class Aspirante(Persona):
         self.estado = "Registrado"
 
 
+#---------------------------------------------------------------------------------------
+
+class Carrera:
+    def __init__(self, nombre, modalidad, jornada, cupos):
+        self.nombre = nombre
+        self.modalidad = modalidad
+        self.jornada = jornada
+        self.cupos = cupos
+
+    def tiene_cupos(self):
+        return self.cupos > 0
+
+    def asignar_cupo(self):
+        if self.tiene_cupos():
+            self.cupos -= 1
+            return True
+        return False
 
 
 
