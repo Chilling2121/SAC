@@ -33,7 +33,8 @@ class Aspirante(Persona):
                  vulnerabilidad_socioeconomica,
                  merito_academico,
                  bachiller_pueblos_nacionalidad,
-                 bachiller_periodo_academico):
+                 bachiller_periodo_academico,
+                 discapacidad):
 
         super().__init__(
             tipo_documento, identificacion, nombres, apellidos, sexo, genero,
@@ -46,6 +47,7 @@ class Aspirante(Persona):
         self.merito_academico = merito_academico
         self.bachiller_pueblos_nacionalidad = bachiller_pueblos_nacionalidad
         self.bachiller_periodo_academico = bachiller_periodo_academico
+        self.discapacidad = discapacidad
 
 
 # Esta clase gestiona los cupos de una carrera respetando el principio SRP.
@@ -78,6 +80,15 @@ class ReglaGrupo(ABC):
     @abstractmethod
     def nombre(self):
         pass
+
+
+class ReglaDiscapacidad(ReglaGrupo):
+    def pertenece(self, aspirante):
+        return aspirante.discapacidad
+
+    @property
+    def nombre(self):
+        return "DISCAPACIDAD"
 
 
 # Esta clase implementa una estrategia concreta usando el patrón Strategy.
@@ -119,7 +130,7 @@ class ReglaBachillerUltimo(ReglaGrupo):
 
 # Esta clase gestiona la asignación de cupos aplicando DIP.
 class SistemaAsignacion:
-    
+
     def __init__(self, reglas):
         self.reglas = reglas
 
@@ -129,7 +140,7 @@ class SistemaAsignacion:
                 carrera.asignar_cupo()
                 return regla.nombre
         return "SIN CUPO"
-    
+
 
 
 # Ejemplo de uso
@@ -143,6 +154,7 @@ carrera_admin = Carrera(
 
 # Se instancia el sistema con las reglas en el orden de prioridad definido
 sistema = SistemaAsignacion([
+    ReglaDiscapacidad(),
     ReglaMerito(),
     ReglaVulnerabilidad(),
     ReglaPueblos(),
@@ -167,7 +179,8 @@ aspirante1 = Aspirante(
     vulnerabilidad_socioeconomica=False,
     merito_academico=True,
     bachiller_pueblos_nacionalidad=False,
-    bachiller_periodo_academico=False
+    bachiller_periodo_academico=False,
+    discapacidad=False
 )
 
 aspirante2 = Aspirante(
@@ -187,7 +200,8 @@ aspirante2 = Aspirante(
     vulnerabilidad_socioeconomica=True,
     merito_academico=False,
     bachiller_pueblos_nacionalidad=False,
-    bachiller_periodo_academico=False
+    bachiller_periodo_academico=False,
+    discapacidad=True
 )
 
 aspirante3 = Aspirante(
@@ -207,7 +221,8 @@ aspirante3 = Aspirante(
     vulnerabilidad_socioeconomica=False,
     merito_academico=False,
     bachiller_pueblos_nacionalidad=False,
-    bachiller_periodo_academico=False
+    bachiller_periodo_academico=False,
+    discapacidad=False
 )
 
 # Se ejecuta el proceso de asignación usando el sistema
