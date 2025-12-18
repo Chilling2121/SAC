@@ -422,7 +422,6 @@ class SistemaAsignacion:
 
 #Sirve para definir el ORDEN y las REGLAS con las que se asignan los cupos.
 
-
 sistema = SistemaAsignacion([
     ReglaMerito(),
     ReglaVulnerabilidad(),
