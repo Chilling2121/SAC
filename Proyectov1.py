@@ -515,10 +515,84 @@ print("Cupos restantes para la carrera de Administración de empresas:", carrera
 
 
 
+# CARRERA TI
+print("CARRERA TI:")
+
+carrera_ti = Carrera(
+    nombre="Tecnologías de la Información",
+    modalidad="Presencial",
+    jornada="Matutina - Vespertina",
+    cupos=34
+)
 
 
+aspirante_ti_1 = Aspirante(
+    idAspirante=4,
+    tipo_documento="CÉDULA",
+    identificacion="1312345678",
+    nombres="Carlos",
+    apellidos="Mendoza",
+    sexo="HOMBRE",
+    genero="MASCULINO",
+    nacionalidad="ECUATORIANA",
+    fecha_nacimiento="2005-10-10",
+    autoidentificacion="Mestizo",
+    correo="carlos@ti.com",
+    celular="0961234567",
+    calificacion=850,
+    vulnerabilidad_socioeconomica="SI",
+    merito_academico="NO",
+    bachiller_pueblos_nacionalidad="NO",
+    bachiller_periodo_academico="NO"
+)
 
+aspirante_ti_2 = Aspirante(
+    idAspirante=5,
+    tipo_documento="CÉDULA",
+    identificacion="1398765432",
+    nombres="Joselo",
+    apellidos="Guamán",
+    sexo="HOMBRE",
+    genero="MASCULINO",
+    nacionalidad="ECUATORIANA",
+    fecha_nacimiento="2006-01-15",
+    autoidentificacion="Indígena",
+    correo="joselo@ti.com",
+    celular="0969876543",
+    calificacion=920,
+    vulnerabilidad_socioeconomica="NO",
+    merito_academico="NO",
+    bachiller_pueblos_nacionalidad="SI",
+    bachiller_periodo_academico="NO"
+)
 
+aspirante_ti_3 = Aspirante(
+    idAspirante=6,
+    tipo_documento="CÉDULA",
+    identificacion="1355554444",
+    nombres="Roberto",
+    apellidos="Cuzme",
+    sexo="HOMBRE",
+    genero="MASCULINO",
+    nacionalidad="ECUATORIANA",
+    fecha_nacimiento="2005-05-20",
+    autoidentificacion="Blanco",
+    correo="roberto@ti.com",
+    celular="0955554444",
+    calificacion=980,
+    vulnerabilidad_socioeconomica="NO",
+    merito_academico="NO",
+    bachiller_pueblos_nacionalidad="NO",
+    bachiller_periodo_academico="NO"
+)
+
+print("Aspirante 4-----")
+print(sistema.asignar(carrera_ti, aspirante_ti_1))
+print("Aspirante 5-----")
+print(sistema.asignar(carrera_ti, aspirante_ti_2))
+print("Aspirante 6-----")
+print(sistema.asignar(carrera_ti, aspirante_ti_3))
+print("Cupos restantes para la carrera de Tecnologías de la Información:", carrera_ti.cupos)
 
 
 
