@@ -2,6 +2,7 @@
 
 // Clase base que representa a una persona dentro del sistema
 // Aplica encapsulamiento usando un atributo privado
+// Se aplica encapsulamiento para proteger la identificación
 class Persona {
   private identificacionPrivada: string;
 
@@ -70,11 +71,12 @@ class Aspirante extends Persona {
 class Carrera {
   constructor(
     public nombre: string,
-    public cuposTotales: number
+    public cuposTotales: number // Cupos disponibles que se irán reduciendo
   ) {}
 
-  // Reduce un cupo disponible si existen cupos
-  asignarCupo(): boolean {
+  // Controla que no se asignen más cupos de los disponibles
+  // Método para reducir el número de cupos disponibles
+  asignarCupo(): boolean { 
     if (this.cuposTotales > 0) {
       this.cuposTotales--;
       return true;
@@ -85,6 +87,7 @@ class Carrera {
 
 // Interfaz que define el contrato que deben cumplir todas las reglas de asignación
 // Permite aplicar polimorfismo y el principio abierto/cerrado
+
 interface ReglaGrupo {
   nombre: string;
   porcentaje: number;
@@ -137,8 +140,9 @@ class ReglaBachiller implements ReglaGrupo {
 }
 
 // Clase central que coordina todo el proceso de asignación
+// No hay datos solo logica
 class SistemaAsignacion {
-  constructor(private reglas: ReglaGrupo[]) {}
+  constructor(private reglas: ReglaGrupo[]) {}  // Recibe las reglas 
 
   // Calcula cuántos cupos corresponden a cada grupo según porcentajes
   calcularCupos(carrera: Carrera): void {
