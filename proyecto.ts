@@ -1,17 +1,19 @@
 // Proyecto: Sistema de Asignación de Cupos (SAC) en TypeScript
 
+// Clase base que representa a una persona dentro del sistema
+// Aplica encapsulamiento usando un atributo privado
 class Persona {
   private identificacionPrivada: string;
 
   constructor(
-    public tipo_documento: string,
+    public tipoDocumento: string,
     identificacion: string,
     public nombres: string,
     public apellidos: string,
     public sexo: string,
     public genero: string,
     public nacionalidad: string,
-    public fecha_nacimiento: string,
+    public fechaNacimiento: string,
     public autoidentificacion: string,
     public correo: string,
     public celular: string
@@ -19,44 +21,44 @@ class Persona {
     this.identificacionPrivada = identificacion;
   }
 
+  // Getter para acceder a la identificación sin exponer el atributo privado
   get identificacion(): string {
     return this.identificacionPrivada;
   }
-
-  informacion_basica(): string {
-    return `${this.nombres} ${this.apellidos} (${this.identificacion})`;
-  }
 }
 
+// Aspirante hereda de Persona y añade atributos necesarios para la asignación de cupos
 class Aspirante extends Persona {
   constructor(
     public idAspirante: number,
-    tipo_documento: string,
+    tipoDocumento: string,
     identificacion: string,
     nombres: string,
     apellidos: string,
     sexo: string,
     genero: string,
     nacionalidad: string,
-    fecha_nacimiento: string,
+    fechaNacimiento: string,
     autoidentificacion: string,
     correo: string,
     celular: string,
-    public calificacion: number,
-    public vulnerabilidad_socioeconomica: boolean,
-    public merito_academico: boolean,
-    public bachiller_pueblos_nacionalidad: boolean,
-    public bachiller_periodo_academico: boolean
+
+    // Datos utilizados para la lógica de asignación
+    public puntaje: number,
+    public vulnerabilidad: boolean,
+    public merito: boolean,
+    public pueblosNacionalidades: boolean,
+    public bachillerUltimoAnio: boolean
   ) {
     super(
-      tipo_documento,
+      tipoDocumento,
       identificacion,
       nombres,
       apellidos,
       sexo,
       genero,
       nacionalidad,
-      fecha_nacimiento,
+      fechaNacimiento,
       autoidentificacion,
       correo,
       celular
@@ -64,173 +66,159 @@ class Aspirante extends Persona {
   }
 }
 
+// Representa una carrera con un número limitado de cupos
 class Carrera {
   constructor(
     public nombre: string,
-    public modalidad: string,
-    public jornada: string,
-    public cupos: number
+    public cuposTotales: number
   ) {}
 
-  tiene_cupos(): boolean {
-    return this.cupos > 0;
-  }
-
-  asignar_cupo(): boolean {
-    if (this.tiene_cupos()) {
-      this.cupos -= 1;
+  // Reduce un cupo disponible si existen cupos
+  asignarCupo(): boolean {
+    if (this.cuposTotales > 0) {
+      this.cuposTotales--;
       return true;
     }
     return false;
   }
 }
 
-// Interfaz equivalente a la clase abstracta de Python
+// Interfaz que define el contrato que deben cumplir todas las reglas de asignación
+// Permite aplicar polimorfismo y el principio abierto/cerrado
 interface ReglaGrupo {
+  nombre: string;
+  porcentaje: number;
+  cuposDisponibles: number;
   pertenece(aspirante: Aspirante): boolean;
-  readonly nombre: string;
 }
 
+// Regla para aspirantes con mérito académico
 class ReglaMerito implements ReglaGrupo {
-  pertenece(aspirante: Aspirante): boolean {
-    return aspirante.merito_academico;
-  }
-  get nombre(): string {
-    return "MÉRITO ACADÉMICO";
+  nombre = "MÉRITO ACADÉMICO";
+  porcentaje = 0.30;
+  cuposDisponibles = 0;
+
+  pertenece(a: Aspirante): boolean {
+    return a.merito;
   }
 }
 
+// Regla para aspirantes con vulnerabilidad socioeconómica
 class ReglaVulnerabilidad implements ReglaGrupo {
-  pertenece(aspirante: Aspirante): boolean {
-    return aspirante.vulnerabilidad_socioeconomica;
-  }
-  get nombre(): string {
-    return "VULNERABILIDAD SOCIOECONÓMICA";
+  nombre = "VULNERABILIDAD SOCIOECONÓMICA";
+  porcentaje = 0.25;
+  cuposDisponibles = 0;
+
+  pertenece(a: Aspirante): boolean {
+    return a.vulnerabilidad;
   }
 }
 
+// Regla para pueblos y nacionalidades
 class ReglaPueblos implements ReglaGrupo {
-  pertenece(aspirante: Aspirante): boolean {
-    return aspirante.bachiller_pueblos_nacionalidad;
-  }
-  get nombre(): string {
-    return "BACHILLER PUEBLOS Y NACIONALIDADES";
+  nombre = "PUEBLOS Y NACIONALIDADES";
+  porcentaje = 0.15;
+  cuposDisponibles = 0;
+
+  pertenece(a: Aspirante): boolean {
+    return a.pueblosNacionalidades;
   }
 }
 
-class ReglaBachillerUltimo implements ReglaGrupo {
-  pertenece(aspirante: Aspirante): boolean {
-    return aspirante.bachiller_periodo_academico;
-  }
-  get nombre(): string {
-    return "BACHILLER ÚLTIMO AÑO";
+// Regla para bachilleres del último año
+class ReglaBachiller implements ReglaGrupo {
+  nombre = "BACHILLER ÚLTIMO AÑO";
+  porcentaje = 0.10;
+  cuposDisponibles = 0;
+
+  pertenece(a: Aspirante): boolean {
+    return a.bachillerUltimoAnio;
   }
 }
 
-type ResultadoAsignacion = {
-  resultado: "ASIGNADO" | "SIN CUPO";
-  grupo: string | null;
-  carrera: string;
-};
-
+// Clase central que coordina todo el proceso de asignación
 class SistemaAsignacion {
   constructor(private reglas: ReglaGrupo[]) {}
 
-  asignar(carrera: Carrera, aspirante: Aspirante): ResultadoAsignacion {
-    if (!carrera.tiene_cupos()) {
-      return { resultado: "SIN CUPO", grupo: null, carrera: carrera.nombre };
-    }
-
+  // Calcula cuántos cupos corresponden a cada grupo según porcentajes
+  calcularCupos(carrera: Carrera): void {
     for (const regla of this.reglas) {
-      if (regla.pertenece(aspirante)) {
-        carrera.asignar_cupo();
-        return { resultado: "ASIGNADO", grupo: regla.nombre, carrera: carrera.nombre };
+      regla.cuposDisponibles = Math.floor(
+        carrera.cuposTotales * regla.porcentaje
+      );
+    }
+  }
+
+  // Asigna cupos respetando prioridad de grupos y puntaje
+  asignar(carrera: Carrera, aspirantes: Aspirante[]) {
+    this.calcularCupos(carrera);
+
+    // Se ordenan los aspirantes por puntaje (mayor a menor)
+    aspirantes.sort((a, b) => b.puntaje - a.puntaje);
+
+    const resultados: any[] = [];
+
+    for (const aspirante of aspirantes) {
+      let asignado = false;
+
+      // Se evalúan las reglas en el orden definido (prioridad normativa)
+      for (const regla of this.reglas) {
+        if (
+          regla.pertenece(aspirante) &&
+          regla.cuposDisponibles > 0 &&
+          carrera.cuposTotales > 0
+        ) {
+          regla.cuposDisponibles--;
+          carrera.asignarCupo();
+          resultados.push({
+            aspirante: aspirante.nombres,
+            resultado: "ASIGNADO",
+            grupo: regla.nombre
+          });
+          asignado = true;
+          break;
+        }
+      }
+
+      // Si no pertenece a ningún grupo prioritario, se asigna como población general
+      if (!asignado && carrera.cuposTotales > 0) {
+        carrera.asignarCupo();
+        resultados.push({
+          aspirante: aspirante.nombres,
+          resultado: "ASIGNADO",
+          grupo: "POBLACIÓN GENERAL"
+        });
+      }
+
+      // Si ya no hay cupos disponibles
+      if (!asignado && carrera.cuposTotales === 0) {
+        resultados.push({
+          aspirante: aspirante.nombres,
+          resultado: "SIN CUPO",
+          grupo: null
+        });
       }
     }
 
-    carrera.asignar_cupo();
-    return { resultado: "ASIGNADO", grupo: "POBLACIÓN GENERAL", carrera: carrera.nombre };
+    return resultados;
   }
 }
 
-// Ejemplo de uso
-
+// Ejecución de ejemplo del sistema
 const sistema = new SistemaAsignacion([
   new ReglaMerito(),
   new ReglaVulnerabilidad(),
   new ReglaPueblos(),
-  new ReglaBachillerUltimo(),
+  new ReglaBachiller()
 ]);
 
-const carrera_admin = new Carrera("Administración de Empresas", "Presencial", "Nocturna", 35);
+const carrera = new Carrera("Administración de Empresas", 10);
 
-const aspirante1 = new Aspirante(
-  1,
-  "CÉDULA",
-  "1350432058",
-  "Jhon",
-  "Zambrano",
-  "HOMBRE",
-  "MASCULINO",
-  "ECUATORIANA",
-  "2005-03-12",
-  "Montubio",
-  "jhon@example.com",
-  "0999999999",
-  795,
-  false,
-  true,
-  false,
-  false
-);
+const aspirantes: Aspirante[] = [
+  new Aspirante(1,"CÉDULA","1","Ana","Loor","MUJER","FEMENINO","EC","2005","Mestiza","a@mail","099",850,true,true,false,false),
+  new Aspirante(2,"CÉDULA","2","Luis","Vera","HOMBRE","MASCULINO","EC","2004","Montubio","b@mail","098",820,false,false,true,false),
+  new Aspirante(3,"CÉDULA","3","Carlos","Paz","HOMBRE","MASCULINO","EC","2005","Mestizo","c@mail","097",780,false,false,false,false)
+];
 
-const aspirante2 = new Aspirante(
-  2,
-  "CÉDULA",
-  "1351658859",
-  "Liliana",
-  "Loor",
-  "MUJER",
-  "FEMENINO",
-  "ECUATORIANA",
-  "2006-07-18",
-  "Mestiza",
-  "liliana@example.com",
-  "0988888888",
-  749,
-  true,
-  false,
-  false,
-  false
-);
-
-const aspirante3 = new Aspirante(
-  3,
-  "CÉDULA",
-  "1315374700",
-  "Luis",
-  "Vera",
-  "HOMBRE",
-  "MASCULINO",
-  "ECUATORIANA",
-  "2005-11-09",
-  "Montubio",
-  "luis@example.com",
-  "0977777777",
-  742,
-  false,
-  false,
-  false,
-  false
-);
-
-console.log("Aspirante 1");
-console.log(sistema.asignar(carrera_admin, aspirante1));
-
-console.log("Aspirante 2");
-console.log(sistema.asignar(carrera_admin, aspirante2));
-
-console.log("Aspirante 3");
-console.log(sistema.asignar(carrera_admin, aspirante3));
-
-console.log("Cupos restantes:", carrera_admin.cupos);
+console.log(sistema.asignar(carrera, aspirantes));
+console.log("Cupos restantes:", carrera.cuposTotales);
