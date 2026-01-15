@@ -192,6 +192,7 @@ class SistemaAsignacion {
           resultado: "ASIGNADO",
           grupo: "POBLACIÓN GENERAL"
         });
+        asignado=true;
       }
 
       // Si ya no hay cupos disponibles
@@ -221,7 +222,16 @@ const carrera = new Carrera("Administración de Empresas", 10);
 const aspirantes: Aspirante[] = [
   new Aspirante(1,"CÉDULA","1","Ana","Loor","MUJER","FEMENINO","EC","2005","Mestiza","a@mail","099",850,true,true,false,false),
   new Aspirante(2,"CÉDULA","2","Luis","Vera","HOMBRE","MASCULINO","EC","2004","Montubio","b@mail","098",820,false,false,true,false),
-  new Aspirante(3,"CÉDULA","3","Carlos","Paz","HOMBRE","MASCULINO","EC","2005","Mestizo","c@mail","097",780,false,false,false,false)
+  new Aspirante(3,"CÉDULA","3","Carlos","Paz","HOMBRE","MASCULINO","EC","2005","Mestizo","c@mail","097",780,false,true,false,false),
+  new Aspirante(4,"CÉDULA","4","Ana2","Loor","MUJER","FEMENINO","EC","2005","Mestiza","a@mail","099",850,true,true,false,false),
+  new Aspirante(5,"CÉDULA","5","Luis2","Vera","HOMBRE","MASCULINO","EC","2004","Montubio","b@mail","098",820,false,true,true,false),
+  new Aspirante(6,"CÉDULA","6","Carlos2","Paz","HOMBRE","MASCULINO","EC","2005","Mestizo","c@mail","097",780,false,true,false,false),
+  new Aspirante(7,"CÉDULA","7","Ana3","Loor","MUJER","FEMENINO","EC","2005","Mestiza","a@mail","099",850,true,true,false,false),
+  new Aspirante(8,"CÉDULA","8","Luis3","Vera","HOMBRE","MASCULINO","EC","2004","Montubio","b@mail","098",820,false,false,true,false),
+  new Aspirante(9,"CÉDULA","9","Carlos3","Paz","HOMBRE","MASCULINO","EC","2005","Mestizo","c@mail","097",780,false,false,true,false),
+  new Aspirante(10,"CÉDULA","10","Ana","Loor","MUJER","FEMENINO","EC","2005","Mestiza","a@mail","099",850,true,true,false,false),
+  new Aspirante(11,"CÉDULA","11","Luis","Vera","HOMBRE","MASCULINO","EC","2004","Montubio","b@mail","098",820,false,true,false,false),
+  new Aspirante(12,"CÉDULA","12","Jose","Paz","HOMBRE","MASCULINO","EC","2005","Mestizo","c@mail","097",200,false,true,false,false)
 ];
 
 console.log(sistema.asignar(carrera, aspirantes));
