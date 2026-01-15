@@ -1,0 +1,27 @@
+{
+  "name": "codigos",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node proyecto.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chilling2121/SAC.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Chilling2121/SAC/issues"
+  },
+  "homepage": "https://github.com/Chilling2121/SAC#readme",
+  "devDependencies": {
+    "@types/node": "^25.0.8",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
