@@ -1,8 +1,9 @@
 // Proyecto: Sistema de Asignación de Cupos (SAC) en TypeScript
 
-// Clase base que representa a una persona dentro del sistema
-// Aplica encapsulamiento usando un atributo privado
-// Se aplica encapsulamiento para proteger la identificación
+
+// 1) CLASE BASE: PERSONA
+// Representa a una persona dentro del sistema.
+// Se aplica encapsulamiento protegiendo la identificación (dato sensible).
 class Persona {
   private identificacionPrivada: string;
 
@@ -19,16 +20,20 @@ class Persona {
     public correo: string,
     public celular: string
   ) {
+    // Se guarda internamente para que no se manipule desde fuera.
     this.identificacionPrivada = identificacion;
   }
 
-  // Getter para acceder a la identificación sin exponer el atributo privado
+  // Getter: permite leer la identificación sin exponer el atributo privado.
   get identificacion(): string {
     return this.identificacionPrivada;
   }
 }
 
-// Aspirante hereda de Persona y añade atributos necesarios para la asignación de cupos
+
+// 2) CLASE DERIVADA: ASPIRANTE
+
+// Aspirante hereda de Persona y añade datos necesarios para asignación de cupos.
 class Aspirante extends Persona {
   constructor(
     public idAspirante: number,
@@ -44,13 +49,14 @@ class Aspirante extends Persona {
     correo: string,
     celular: string,
 
-    // Datos utilizados para la lógica de asignación
+    // Datos usados por la lógica de asignación
     public puntaje: number,
     public vulnerabilidad: boolean,
     public merito: boolean,
     public pueblosNacionalidades: boolean,
     public bachillerUltimoAnio: boolean
   ) {
+    // Llama al constructor de Persona para inicializar los datos base.
     super(
       tipoDocumento,
       identificacion,
@@ -67,16 +73,17 @@ class Aspirante extends Persona {
   }
 }
 
-// Representa una carrera con un número limitado de cupos
+
+// 3) CLASE: CARRERA
+// Representa una carrera con un número limitado de cupos.
 class Carrera {
   constructor(
     public nombre: string,
-    public cuposTotales: number // Cupos disponibles que se irán reduciendo
+    public cuposTotales: number // Se reduce conforme se asignan cupos
   ) {}
 
-  // Controla que no se asignen más cupos de los disponibles
-  // Método para reducir el número de cupos disponibles
-  asignarCupo(): boolean { 
+  // Asigna un cupo si existe disponibilidad.
+  asignarCupo(): boolean {
     if (this.cuposTotales > 0) {
       this.cuposTotales--;
       return true;
@@ -85,9 +92,10 @@ class Carrera {
   }
 }
 
-// Interfaz que define el contrato que deben cumplir todas las reglas de asignación
-// Permite aplicar polimorfismo y el principio abierto/cerrado
 
+// 4) INTERFAZ: REGLA DE GRUPO (CONTRATO)
+// Define el contrato que deben cumplir todas las reglas de asignación.
+// Permite polimorfismo y facilita extender el sistema (OCP).
 interface ReglaGrupo {
   nombre: string;
   porcentaje: number;
@@ -95,7 +103,9 @@ interface ReglaGrupo {
   pertenece(aspirante: Aspirante): boolean;
 }
 
-// Regla para aspirantes con mérito académico
+
+// Regla: Mérito Académico (30%)
+
 class ReglaMerito implements ReglaGrupo {
   nombre = "MÉRITO ACADÉMICO";
   porcentaje = 0.30;
@@ -106,7 +116,9 @@ class ReglaMerito implements ReglaGrupo {
   }
 }
 
-// Regla para aspirantes con vulnerabilidad socioeconómica
+
+// Regla: Vulnerabilidad Socioeconómica (25%)
+
 class ReglaVulnerabilidad implements ReglaGrupo {
   nombre = "VULNERABILIDAD SOCIOECONÓMICA";
   porcentaje = 0.25;
@@ -117,7 +129,9 @@ class ReglaVulnerabilidad implements ReglaGrupo {
   }
 }
 
-// Regla para pueblos y nacionalidades
+
+// Regla: Pueblos y Nacionalidades (15%)
+
 class ReglaPueblos implements ReglaGrupo {
   nombre = "PUEBLOS Y NACIONALIDADES";
   porcentaje = 0.15;
@@ -128,7 +142,9 @@ class ReglaPueblos implements ReglaGrupo {
   }
 }
 
-// Regla para bachilleres del último año
+
+// Regla: Bachiller Último Año (10%)
+
 class ReglaBachiller implements ReglaGrupo {
   nombre = "BACHILLER ÚLTIMO AÑO";
   porcentaje = 0.10;
@@ -139,12 +155,15 @@ class ReglaBachiller implements ReglaGrupo {
   }
 }
 
-// Clase central que coordina todo el proceso de asignación
-// No hay datos solo logica
-class SistemaAsignacion {
-  constructor(private reglas: ReglaGrupo[]) {}  // Recibe las reglas 
 
-  // Calcula cuántos cupos corresponden a cada grupo según porcentajes
+// 5) CLASE CENTRAL: SISTEMAASIGNACION
+// Coordina el proceso de asignación.
+// Recibe reglas por constructor, evitando acoplamiento fuerte.
+class SistemaAsignacion {
+  constructor(private reglas: ReglaGrupo[]) {}
+
+  // Calcula los cupos por grupo según el porcentaje definido.
+  // Se usa Math.floor para evitar cupos decimales.
   calcularCupos(carrera: Carrera): void {
     for (const regla of this.reglas) {
       regla.cuposDisponibles = Math.floor(
@@ -153,11 +172,11 @@ class SistemaAsignacion {
     }
   }
 
-  // Asigna cupos respetando prioridad de grupos y puntaje
+  // Asigna cupos respetando prioridad de reglas y puntaje.
   asignar(carrera: Carrera, aspirantes: Aspirante[]) {
     this.calcularCupos(carrera);
 
-    // Se ordenan los aspirantes por puntaje (mayor a menor)
+    // Se prioriza a los aspirantes de mayor puntaje.
     aspirantes.sort((a, b) => b.puntaje - a.puntaje);
 
     const resultados: any[] = [];
@@ -165,26 +184,29 @@ class SistemaAsignacion {
     for (const aspirante of aspirantes) {
       let asignado = false;
 
-      // Se evalúan las reglas en el orden definido (prioridad normativa)
+      // Se evalúan las reglas en el orden definido (prioridad).
       for (const regla of this.reglas) {
         if (
           regla.pertenece(aspirante) &&
           regla.cuposDisponibles > 0 &&
           carrera.cuposTotales > 0
         ) {
+          // Descuenta cupo del grupo y cupo total de la carrera.
           regla.cuposDisponibles--;
           carrera.asignarCupo();
+
           resultados.push({
             aspirante: aspirante.nombres,
             resultado: "ASIGNADO",
             grupo: regla.nombre
           });
+
           asignado = true;
           break;
         }
       }
 
-      // Si no pertenece a ningún grupo prioritario, se asigna como población general
+      // Si no pertenece a grupos, entra a población general si hay cupos.
       if (!asignado && carrera.cuposTotales > 0) {
         carrera.asignarCupo();
         resultados.push({
@@ -192,10 +214,10 @@ class SistemaAsignacion {
           resultado: "ASIGNADO",
           grupo: "POBLACIÓN GENERAL"
         });
-        asignado=true;
+        asignado = true;
       }
 
-      // Si ya no hay cupos disponibles
+      // Si ya no hay cupos, queda sin cupo.
       if (!asignado && carrera.cuposTotales === 0) {
         resultados.push({
           aspirante: aspirante.nombres,
@@ -209,7 +231,9 @@ class SistemaAsignacion {
   }
 }
 
-// Ejecución de ejemplo del sistema
+
+// 6) EJECUCIÓN DE PRUEBA
+
 const sistema = new SistemaAsignacion([
   new ReglaMerito(),
   new ReglaVulnerabilidad(),
@@ -227,11 +251,7 @@ const aspirantes: Aspirante[] = [
   new Aspirante(5,"CÉDULA","5","Luis2","Vera","HOMBRE","MASCULINO","EC","2004","Montubio","b@mail","098",820,false,true,true,false),
   new Aspirante(6,"CÉDULA","6","Carlos2","Paz","HOMBRE","MASCULINO","EC","2005","Mestizo","c@mail","097",780,false,true,false,false),
   new Aspirante(7,"CÉDULA","7","Ana3","Loor","MUJER","FEMENINO","EC","2005","Mestiza","a@mail","099",850,true,true,false,false),
-  new Aspirante(8,"CÉDULA","8","Luis3","Vera","HOMBRE","MASCULINO","EC","2004","Montubio","b@mail","098",820,false,false,true,false),
-  new Aspirante(9,"CÉDULA","9","Carlos3","Paz","HOMBRE","MASCULINO","EC","2005","Mestizo","c@mail","097",780,false,false,true,false),
-  new Aspirante(10,"CÉDULA","10","Ana","Loor","MUJER","FEMENINO","EC","2005","Mestiza","a@mail","099",850,true,true,false,false),
-  new Aspirante(11,"CÉDULA","11","Luis","Vera","HOMBRE","MASCULINO","EC","2004","Montubio","b@mail","098",820,false,true,false,false),
-  new Aspirante(12,"CÉDULA","12","Jose","Paz","HOMBRE","MASCULINO","EC","2005","Mestizo","c@mail","097",200,false,true,false,false)
+  new ReglaBachiller()
 ];
 
 console.log(sistema.asignar(carrera, aspirantes));
